@@ -30,7 +30,7 @@ class Vertex(object):
 
     def get_neighbors(self):
         """Return the neighbors of this vertex."""
-        # TODO return the neighbors
+        return [neighbor for neighbor in self.neighbors.items()]
 
     def get_id(self):
         """Return the id of this vertex."""
@@ -40,6 +40,10 @@ class Vertex(object):
         """Return the weight of this edge."""
         # TODO return the weight of the edge from this
         # vertex to the given vertex.
+        try:
+            return self.neighbors[vertex]
+        except KeyError:
+            return "Vertex {} not in Graph".format(vertex.id)
 
 
 """ Graph Class
