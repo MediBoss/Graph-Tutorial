@@ -17,12 +17,16 @@ class Vertex(object):
 
     def add_neighbor(self, vertex, weight=0):
         """Add a neighbor along a weighted edge."""
-        # TODO check if vertex is already a neighbot
-        # TODO if not, add vertex to neighbors and assign weight.
+
+        if vertex not in self.neighbors:
+            self.neighbors[vertex] = weight
+
+        return 
 
     def __str__(self):
         """Output the list of neighbors of this vertex."""
-        return f'{self.id} adjacent to {[x.id for x in self.neighbors]}'
+        return "hi"
+        #return f'{self.id} adjacent to {[x.id for x in self.neighbors]}'
 
     def get_neighbors(self):
         """Return the neighbors of this vertex."""
@@ -52,14 +56,18 @@ class Graph:
 
     def add_vertex(self, key):
         """Add a new vertex object to the graph with the given key and return the vertex."""
-        # TODO increment the number of vertices
-        # TODO create a new vertex
-        # TODO add the new vertex to the vertex list
-        # TODO return the new vertex
+        vertex = Vertex(key)
+        self.numVertices += 1
+        self.vertList[key] = vertex
+
+        return vertex
 
     def get_vertex(self, key):
         """Return the vertex if it exists"""
-        # TODO return the vertex if it is in the graph
+        try:
+            return self.vertList[key]
+        except KeyError:
+            print("Vertex Not found in Network")
 
     def add_edge(self, key1, key2, cost=0):
         """add an edge from vertex with key `key1` to vertex with key `key2` with a cost."""
@@ -101,15 +109,23 @@ if __name__ == "__main__":
 
 
     # Add connections (non weighted edges for now)
-    g.add_edge("Friend 1", "Friend 2")
-    g.add_edge("Friend 2", "Friend 3")
+    g.add_edge("Jeorge", "Obama")
+    g.add_edge("Jeorge", "Lofi")
+    g.add_edge("Jeorge", "Reagan")
+    g.add_edge("Rob", "Obama")
+    g.add_edge("Rob", "Crawford")
+    g.add_edge("Obama", "Josh")
+    g.add_edge("Josh", "Medi")
+    g.add_edge("Obama", "Medi")
+    g.add_edge("Crawford", "Lofi")
+    g.add_edge("Crawford", "Elf")
 
     # Challenge 1: Output the vertices & edges
     # Print vertices
-    print("The vertices are: ", g.get_vertices(), "\n")
+    print("The vertices are: ", g.get_vertices())
 
     # Print edges
-    print("The edges are: ")
-    for v in g:
-        for w in v.get_neighbors():
-            print("( %s , %s )" % (v.getId(), w.getId()))
+    # print("The edges are: ")
+    # for v in g:
+    #     for w in v.get_neighbors():
+    #         print("( %s , %s )" % (v.getId(), w.getId()))
