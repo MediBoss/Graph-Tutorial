@@ -82,6 +82,20 @@ class Graph:
         # and using the addNeighbor method of the Vertex class.
         # Hint: the vertex f is stored in self.vertList[f].
 
+        try:
+            if not self.vertList[key1] and not self.vertList[key2]:
+                return "Both Vertexes not in Graph"
+            elif not self.vertList[key1] or not self.vertList[key2]:
+                return "One of the Vertext not in Graph."
+            else:
+                vertext_one = Vertex(key1)
+                vertext_two = Vertex(key2)
+                vertext_one.add_neighbor(vertext_two)
+                return
+
+        except KeyError:
+            return "Vertex not in Graph"
+
     def get_vertices(self):
         """return all the vertices in the graph"""
         return self.vertList.keys()
