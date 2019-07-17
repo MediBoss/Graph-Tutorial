@@ -15,21 +15,24 @@ class Vertex(object):
         self.id = vertex
         self.neighbors = {}
 
-    def add_neighbor(self, vertex, weight=0):
-        """Add a neighbor along a weighted edge."""
-
-        if vertex not in self.neighbors:
-            self.neighbors[vertex] = weight
-
-        return 
+    def __eq__(self, vertex):
+        return self.id == vertex.id
 
     def __str__(self):
         """Output the list of neighbors of this vertex."""
-        return "hi"
-        #return f'{self.id} adjacent to {[x.id for x in self.neighbors]}'
+        return self.id
+
+    def add_neighbor(self, vertex, weight=0):
+        """Add a neighbor along a weighted edge."""
+        if vertex not in self.neighbors:
+            self.neighbors[vertex] = weight
+            return True
+
+        return False
 
     def get_neighbors(self):
         """Return the neighbors of this vertex."""
+        
         return [neighbor for neighbor in self.neighbors.items()]
 
     def get_id(self):
@@ -38,12 +41,16 @@ class Vertex(object):
 
     def get_edge_weight(self, vertex):
         """Return the weight of this edge."""
-        # TODO return the weight of the edge from this
-        # vertex to the given vertex.
         try:
             return self.neighbors[vertex]
         except KeyError:
             return "Vertex {} not in Graph".format(vertex.id)
+
+    def breadth_first_search(self, vertex, n):
+        """
+            Return all nodes that are exactly n connections away from vertex.
+        """
+        pass
 
 
 """ Graph Class
@@ -51,58 +58,67 @@ A class demonstrating the essential
 facts and functionalities of graphs.
 """
 
-
 class Graph:
     def __init__(self):
-        """Initialize a graph object with an empty dictionary."""
-        self.vertList = {}
-        self.numVertices = 0
+        """Initialize a graph object with an empty dictionary, number of edges and vertices"""
+        self.graph = {}
+        self.edges = 0
+        self.vertices = 0
 
     def add_vertex(self, key):
-        """Add a new vertex object to the graph with the given key and return the vertex."""
+        """Add a new vertex object to the graph with the given key and return the vertex.
+            Time & Space complexity : O(1) | O(1)
+        """
         vertex = Vertex(key)
-        self.numVertices += 1
-        self.vertList[key] = vertex
+        self.vertices += 1
+        self.graph[key] = vertex
 
         return vertex
 
     def get_vertex(self, key):
-        """Return the vertex if it exists"""
-        try:
-            return self.vertList[key]
-        except KeyError:
-            print("Vertex Not found in Network")
+        """Return the vertex if it exists
+            Time & Space Complexity : O(1) | O(1)
+        """
 
-    def add_edge(self, key1, key2, cost=0):
+        vertex = None
+        try: 
+           vertex = self.graph[key]
+        except KeyError:
+            raise ValueError("Vertex with key {} not in Graph".format(key))
+
+        return vertex
+
+
+    def add_edge(self, key1, key2, weight=0):
         """add an edge from vertex with key `key1` to vertex with key `key2` with a cost."""
-        # TODO if either vertex is not in the graph,
-        # add it - or return an error (choice is up to you).
-        # TODO if both vertices in the graph, add the
-        # edge by making t a neighbor of f
-        # and using the addNeighbor method of the Vertex class.
-        # Hint: the vertex f is stored in self.vertList[f].
 
-        try:
-            if not self.vertList[key1] and not self.vertList[key2]:
-                return "Both Vertexes not in Graph"
-            elif not self.vertList[key1] or not self.vertList[key2]:
-                return "One of the Vertext not in Graph."
-            else:
-                vertext_one = Vertex(key1)
-                vertext_two = Vertex(key2)
-                vertext_one.add_neighbor(vertext_two)
-                return
+    
+        if key1 not in self.graph and key2 not in self.graph:
+            raise ValueError("Both Vertex of keys {} and {} not in Graph".format(key1, key2))
+        elif key1 not in self.graph or key2 not in self.graph:
+            raise ValueError("Either Vertex of keys {} and {} not in Graph".format(key1, key2))
 
-        except KeyError:
-            return "Vertex not in Graph"
+        elif key1 == key2:
+            raise ValueError("Vertex {} can't be its own neighbor".format(key1))
+        else:
+            # Get the two neighbor verteces
+            vertex_one = self.graph[key1]
+            vertex_two = self.graph[key2]
+
+            # Code idea from Vicenzo : https://github.com/C3NZ/CS22/blob/master/challenges/graph.py#L77
+            added_from = vertex_one.add_neighbor(vertex_two, weight)
+            added_to = vertex_two.add_neighbor(vertex_one, weight)
+
+            if added_from and added_to:
+                self.edges += 1
 
     def get_vertices(self):
         """return all the vertices in the graph"""
-        return self.vertList.keys()
+        return self.graph.keys()
 
     def __iter__(self):
         """Iterate over the vertex objects in the graph, to use sytax: for v in g"""
-        return iter(self.vertList.values())
+        return iter(self.graph.values())
 
 
 # Driver code
@@ -113,9 +129,6 @@ if __name__ == "__main__":
     # Challenge 1: Create the graph
 
     g = Graph()
-
-    # Add your friends
-    g.add_vertex("Jeorge")
     g.add_vertex("Lofi")
     g.add_vertex("Obama")
     g.add_vertex("Josh")
@@ -124,7 +137,7 @@ if __name__ == "__main__":
     g.add_vertex("Reagan")
     g.add_vertex("Elf")
     g.add_vertex("Rob")
-
+    g.add_vertex("Jeorge")
 
     # Add connections (non weighted edges for now)
     g.add_edge("Jeorge", "Obama")
@@ -137,13 +150,3 @@ if __name__ == "__main__":
     g.add_edge("Obama", "Medi")
     g.add_edge("Crawford", "Lofi")
     g.add_edge("Crawford", "Elf")
-
-    # Challenge 1: Output the vertices & edges
-    # Print vertices
-    print("The vertices are: ", g.get_vertices())
-
-    # Print edges
-    # print("The edges are: ")
-    # for v in g:
-    #     for w in v.get_neighbors():
-    #         print("( %s , %s )" % (v.getId(), w.getId()))
