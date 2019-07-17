@@ -126,23 +126,17 @@ class Graph:
         graph_queue = deque([vertex])
         visited_vertices.add(vertex)
 
-        count = 0
-        friends = []
-
         while len(graph_queue) > 0:
 
             curr_vertex = graph_queue.popleft()
             adj_vertices = curr_vertex.get_neighbors()
             remaining_elements = set(adj_vertices).difference(visited_vertices)
-
-            print(curr_vertex)
+            count 
             if len(remaining_elements) > 0:
 
                 for elem in remaining_elements:
                     visited_vertices.add(elem)
                     graph_queue.append(elem)
-
-
 
 # Driver code
 
