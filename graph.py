@@ -131,7 +131,6 @@ class Graph:
             curr_vertex = graph_queue.popleft()
             adj_vertices = curr_vertex.get_neighbors()
             remaining_elements = set(adj_vertices).difference(visited_vertices)
-            count 
             if len(remaining_elements) > 0:
 
                 for elem in remaining_elements:
@@ -139,8 +138,6 @@ class Graph:
                     graph_queue.append(elem)
 
 # Driver code
-
-
 if __name__ == "__main__":
 
     # Challenge 1: Create the graph
