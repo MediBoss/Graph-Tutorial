@@ -1,5 +1,5 @@
 #!python
-
+from collections import deque
 """ Vertex Class
 A helper class for the Graph class that defines vertices and vertex neighbors.
 """
@@ -33,7 +33,7 @@ class Vertex(object):
     def get_neighbors(self):
         """Return the neighbors of this vertex."""
         
-        return [neighbor for neighbor in self.neighbors.items()]
+        return [neighbor for neighbor,_ in self.neighbors.items()]
 
     def get_id(self):
         """Return the id of this vertex."""
@@ -45,12 +45,6 @@ class Vertex(object):
             return self.neighbors[vertex]
         except KeyError:
             return "Vertex {} not in Graph".format(vertex.id)
-
-    def breadth_first_search(self, vertex, n):
-        """
-            Return all nodes that are exactly n connections away from vertex.
-        """
-        pass
 
 
 """ Graph Class
@@ -64,6 +58,10 @@ class Graph:
         self.graph = {}
         self.edges = 0
         self.vertices = 0
+
+    def __iter__(self):
+        """Iterate over the vertex objects in the graph, to use sytax: for v in g"""
+        return iter(self.graph.values())
 
     def add_vertex(self, key):
         """Add a new vertex object to the graph with the given key and return the vertex.
@@ -116,9 +114,34 @@ class Graph:
         """return all the vertices in the graph"""
         return self.graph.keys()
 
-    def __iter__(self):
-        """Iterate over the vertex objects in the graph, to use sytax: for v in g"""
-        return iter(self.graph.values())
+    def breadth_first_search(self, vertex_key, n):
+        """
+            Return all nodes that are exactly n connections away from vertex.
+        """
+        if vertex_key not in self.graph:
+            return
+
+        visited_vertices = set()
+        vertex = self.graph[vertex_key]
+        graph_queue = deque([vertex])
+        visited_vertices.add(vertex)
+
+        count = 0
+        friends = []
+
+        while len(graph_queue) > 0:
+
+            curr_vertex = graph_queue.popleft()
+            adj_vertices = curr_vertex.get_neighbors()
+            remaining_elements = set(adj_vertices).difference(visited_vertices)
+
+            print(curr_vertex)
+            if len(remaining_elements) > 0:
+
+                for elem in remaining_elements:
+                    visited_vertices.add(elem)
+                    graph_queue.append(elem)
+
 
 
 # Driver code
@@ -150,3 +173,6 @@ if __name__ == "__main__":
     g.add_edge("Obama", "Medi")
     g.add_edge("Crawford", "Lofi")
     g.add_edge("Crawford", "Elf")
+
+    g.breadth_first_search("Jeorge", 2)
+
