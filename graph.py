@@ -114,28 +114,49 @@ class Graph:
         """return all the vertices in the graph"""
         return self.graph.keys()
 
-    def breadth_first_search(self, vertex_key, n):
-        """
-            Return all nodes that are exactly n connections away from vertex.
-        """
-        if vertex_key not in self.graph:
-            return
+def depth_first_search(graph, origin, destination, visited=None):
+    """DFS to determine if there is a path between two vertices in a weighted directed graph
+    """
 
-        visited_vertices = set()
-        vertex = self.graph[vertex_key]
-        graph_queue = deque([vertex])
-        visited_vertices.add(vertex)
+    if not visited:
+        visited = set()
 
-        while len(graph_queue) > 0:
+    if origin == destination:
+        return True
 
-            curr_vertex = graph_queue.popleft()
-            adj_vertices = curr_vertex.get_neighbors()
-            remaining_elements = set(adj_vertices).difference(visited_vertices)
-            if len(remaining_elements) > 0:
+    visited.add(origin)
+    neighbors = origin.get_neighbors()
+   
+    for neighbor in neighbors:
+        if neighbor not in visited:
+            if depth_first_search(graph, neighbor, destination, visited):
+                return True
+                
+    return False
 
-                for elem in remaining_elements:
-                    visited_vertices.add(elem)
-                    graph_queue.append(elem)
+
+def breadth_first_search(graph, vertex_key, n):
+    """
+        Return all nodes that are exactly n connections away from vertex.
+    """
+    if vertex_key not in self.graph:
+        return
+
+    visited_vertices = set()
+    vertex = graph[vertex_key]
+    graph_queue = deque([vertex])
+    visited_vertices.add(vertex)
+
+    while len(graph_queue) > 0:
+
+        curr_vertex = graph_queue.popleft()
+        adj_vertices = curr_vertex.get_neighbors()
+        remaining_elements = set(adj_vertices).difference(visited_vertices)
+        if len(remaining_elements) > 0:
+
+            for elem in remaining_elements:
+                visited_vertices.add(elem)
+                graph_queue.append(elem)
 
 # Driver code
 if __name__ == "__main__":
@@ -143,27 +164,20 @@ if __name__ == "__main__":
     # Challenge 1: Create the graph
 
     g = Graph()
-    g.add_vertex("Lofi")
-    g.add_vertex("Obama")
-    g.add_vertex("Josh")
-    g.add_vertex("Medi")
-    g.add_vertex("Crawford")
-    g.add_vertex("Reagan")
-    g.add_vertex("Elf")
-    g.add_vertex("Rob")
-    g.add_vertex("Jeorge")
+    g.add_vertex("A")
+    g.add_vertex("B")
+    g.add_vertex("C")
+    g.add_vertex("D")
 
     # Add connections (non weighted edges for now)
-    g.add_edge("Jeorge", "Obama")
-    g.add_edge("Jeorge", "Lofi")
-    g.add_edge("Jeorge", "Reagan")
-    g.add_edge("Rob", "Obama")
-    g.add_edge("Rob", "Crawford")
-    g.add_edge("Obama", "Josh")
-    g.add_edge("Josh", "Medi")
-    g.add_edge("Obama", "Medi")
-    g.add_edge("Crawford", "Lofi")
-    g.add_edge("Crawford", "Elf")
+    g.add_edge("A", "D")
+    g.add_edge("A", "B")
+    g.add_edge("B", "A")
+    g.add_edge("B", "D")
+    g.add_edge("D", "A")
 
-    g.breadth_first_search("Jeorge", 2)
+    origin = g.get_vertex("A")
+    destination = g.get_vertex("C")
+
+    print(depth_first_search(g, origin, destination))
 
