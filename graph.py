@@ -1,5 +1,7 @@
 #!python
 from collections import deque
+import heapq
+
 """ Vertex Class
 A helper class for the Graph class that defines vertices and vertex neighbors.
 """
@@ -114,6 +116,7 @@ class Graph:
         """return all the vertices in the graph"""
         return self.graph.keys()
 
+
 def depth_first_search(graph, origin, destination, visited=None):
     """DFS to determine if there is a path between two vertices in a weighted directed graph
     """
@@ -139,7 +142,7 @@ def breadth_first_search(graph, vertex_key, n):
     """
         Return all nodes that are exactly n connections away from vertex.
     """
-    if vertex_key not in self.graph:
+    if vertex_key not in graph:
         return
 
     visited_vertices = set()
@@ -158,6 +161,57 @@ def breadth_first_search(graph, vertex_key, n):
                 visited_vertices.add(elem)
                 graph_queue.append(elem)
 
+def find_path(graph, from_vert, to_vert, visited=None):
+    
+    if not visited:
+        visited = []
+
+    if (from_vert not in graph) or (to_vert not in graph):
+        return None
+
+    visited.append(from_vert)
+    if from_vert == to_vert:
+        return True
+
+    neighbors = from_vert.get_neighbors()
+
+    for neighbor in neighbors:
+        if neighbor not in visited:
+            if find_path(graph, neighbor, to_vert, visited):
+                return visited
+
+    return None
+
+def shortest_path(graph, A, B):
+
+    # Initializing the costs to get to every vertex from A
+    cost_to_get_to = { vertex: float('inf') for vertex in graph}
+    cost_to_get_to[A] = 0
+
+    # Variables used track of the queued and visited vertices 
+    priority_queue = []
+    visited_vertices = []
+
+    # Initializing the priority queue from lowest to highest cost
+    for vertex in graph:
+        heapq.heappush(priority_queue, (cost_to_get_to[vertex], vertex))
+
+    while len(priority_queue) > 0:
+
+        _,cheapest_vertex = heapq.heappop(priority_queue)
+        # Keep track of the vertices we've poped out of the queue
+        visited_vertices.append(cheapest_vertex)
+
+        for neighbor, weight in graph[visited_vertices]:
+            
+            if cost_to_get_to[cheapest_vertex] + weight < cost_to_get_to[neighbor]:
+                
+                cost_to_get_to[neighbor] = cost_to_get_to[cheapest_vertex] + weight
+                heapq.heapreplace(priority_queue, (cost_to_get_to[neighbor], neighbor))
+
+    return cost_to_get_to[B]
+
+
 # Driver code
 if __name__ == "__main__":
 
@@ -168,16 +222,22 @@ if __name__ == "__main__":
     g.add_vertex("B")
     g.add_vertex("C")
     g.add_vertex("D")
+    g.add_vertex("E")
 
     # Add connections (non weighted edges for now)
-    g.add_edge("A", "D")
+    g.add_edge("A", "C")
     g.add_edge("A", "B")
     g.add_edge("B", "A")
     g.add_edge("B", "D")
-    g.add_edge("D", "A")
+    g.add_edge("C", "A")
+    g.add_edge("C", "E")
+    g.add_edge("D", "B")
+    g.add_edge("D", "E")
+    g.add_edge("E", "C")
+    g.add_edge("E", "D")
 
     origin = g.get_vertex("A")
-    destination = g.get_vertex("C")
+    destination = g.get_vertex("D")
 
-    print(depth_first_search(g, origin, destination))
+    shortest_path(g, "A", "D")
 
