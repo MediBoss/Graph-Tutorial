@@ -18,7 +18,7 @@ class Vertex(object):
         self.neighbors = {}
 
     def __eq__(self, vertex):
-        return self.id == vertex.id
+        return self.id == vertex
 
     def __str__(self):
         """Output the list of neighbors of this vertex."""
@@ -138,7 +138,7 @@ def depth_first_search(graph, origin, destination, visited=None):
     return False
 
 
-def breadth_first_search(graph, vertex_key, n):
+def breadth_first_search(graph, vertex_key):
     """
         Return all nodes that are exactly n connections away from vertex.
     """
@@ -146,7 +146,7 @@ def breadth_first_search(graph, vertex_key, n):
         return
 
     visited_vertices = set()
-    vertex = graph[vertex_key]
+    vertex = graph.get_vertex(vertex_key)
     graph_queue = deque([vertex])
     visited_vertices.add(vertex)
 
@@ -161,6 +161,8 @@ def breadth_first_search(graph, vertex_key, n):
                 visited_vertices.add(elem)
                 graph_queue.append(elem)
 
+    return visited_vertices
+
 def find_path(graph, from_vert, to_vert, visited=None):
     
     if not visited:
@@ -173,43 +175,34 @@ def find_path(graph, from_vert, to_vert, visited=None):
     if from_vert == to_vert:
         return True
 
-    neighbors = from_vert.get_neighbors()
+
+    neighbors = graph.get_vertex(from_vert).get_neighbors()
 
     for neighbor in neighbors:
         if neighbor not in visited:
             if find_path(graph, neighbor, to_vert, visited):
                 return visited
-
     return None
 
-def shortest_path(graph, A, B):
+def shortest_path(graph, origin, destination):
 
-    # Initializing the costs to get to every vertex from A
-    cost_to_get_to = { vertex: float('inf') for vertex in graph}
-    cost_to_get_to[A] = 0
+    graph_queue = deque([origin])
+    distances = { vertex: -1 for vertex in graph}
+    distances[origin] = 0
 
-    # Variables used track of the queued and visited vertices 
-    priority_queue = []
-    visited_vertices = []
+    while len(graph_queue) > 0:
+        curr_vertex = graph_queue.popleft()
+        neighbors = curr_vertex.get_neighbors()
+        
+        for neighbor in neighbors:
+            # if the neighbor has not been visted yet
+            if distances[neighbor] == -1:
+                # Distance to the neighbor 1 away than the curr_vertex
+                distances[neighbor] = distances[curr_vertex] + 1
+                graph_queue.append(neighbor) 
 
-    # Initializing the priority queue from lowest to highest cost
-    for vertex in graph:
-        heapq.heappush(priority_queue, (cost_to_get_to[vertex], vertex))
+    return distances[destination]
 
-    while len(priority_queue) > 0:
-
-        _,cheapest_vertex = heapq.heappop(priority_queue)
-        # Keep track of the vertices we've poped out of the queue
-        visited_vertices.append(cheapest_vertex)
-
-        for neighbor, weight in graph[visited_vertices]:
-            
-            if cost_to_get_to[cheapest_vertex] + weight < cost_to_get_to[neighbor]:
-                
-                cost_to_get_to[neighbor] = cost_to_get_to[cheapest_vertex] + weight
-                heapq.heapreplace(priority_queue, (cost_to_get_to[neighbor], neighbor))
-
-    return cost_to_get_to[B]
 
 
 # Driver code
@@ -239,5 +232,5 @@ if __name__ == "__main__":
     origin = g.get_vertex("A")
     destination = g.get_vertex("D")
 
-    shortest_path(g, "A", "D")
+    print(shortest_path(g, origin, destination))
 
