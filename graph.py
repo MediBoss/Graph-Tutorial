@@ -185,7 +185,9 @@ def find_path(graph, from_vert, to_vert, visited=None):
     return None
 
 def shortest_path(graph, origin, destination):
-
+    '''
+        Finds the shortest distance from two poins and returns the # of edges it takes to get there
+    '''
     graph_queue = deque([origin])
     distances = { vertex: -1 for vertex in graph}
     distances[origin] = 0
@@ -202,6 +204,10 @@ def shortest_path(graph, origin, destination):
                 graph_queue.append(neighbor) 
 
     return distances[destination]
+
+
+def clique(graph):
+    pass
 
 
 
